@@ -75,6 +75,10 @@
 `define VX_CSR_MINSTRET_H               12'hB82
 
 // Machine Performance-monitoring core counters (class 1) /////////////////////
+`define VX_DCR_MPM_CLASS_3              3
+
+`define PERF_CTR_BITS                   44
+
 
 // PERF: pipeline
 `define VX_CSR_MPM_SCHED_ID             12'hB03
@@ -116,7 +120,10 @@
 `define VX_CSR_MPM_LOAD_LT_H            12'hB92
 
 // Machine Performance-monitoring memory counters (class 2) ///////////////////
-
+`define VX_CSR_MPM_TOTAL_ISSUED_WARPS     12'hB03
+`define VX_CSR_MPM_TOTAL_ISSUED_WARPS_H   12'hB83
+`define VX_CSR_MPM_TOTAL_ACTIVE_THREADS   12'hB04
+`define VX_CSR_MPM_TOTAL_ACTIVE_THREADS_H 12'hB84
 // PERF: icache
 `define VX_CSR_MPM_ICACHE_READS         12'hB03     // total reads
 `define VX_CSR_MPM_ICACHE_READS_H       12'hB83
