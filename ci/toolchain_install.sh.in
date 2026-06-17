@@ -58,8 +58,8 @@ riscv64()
 llvm()
 {
     case $OSVERSION in
-    "centos/7") parts=$(eval echo {a..b}) ;;
-    *)          parts=$(eval echo {a..b}) ;;
+    "centos/7") parts=$(eval echo {a..c}) ;;
+    *)          parts=$(eval echo {a..c}) ;;
     esac
     echo $parts
     rm -f llvm-vortex.tar.bz2.parta*
