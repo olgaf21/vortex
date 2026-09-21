@@ -32,6 +32,11 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
+//myflag
+`ifndef SCALAR_LOGIC
+`define SCALAR_LOGIC 0
+`endif
+
 `ifndef EXT_M_DISABLE
 `define EXT_M_ENABLE
 `endif
@@ -146,7 +151,7 @@
 // Platform memory parameters
 
 `ifndef PLATFORM_MEMORY_NUM_BANKS
-`define PLATFORM_MEMORY_NUM_BANKS 2
+`define PLATFORM_MEMORY_NUM_BANKS 8
 `endif
 
 `ifndef PLATFORM_MEMORY_ADDR_WIDTH
@@ -545,6 +550,7 @@
 // Cache Size
 `ifndef ICACHE_SIZE
 `define ICACHE_SIZE 16384
+// `define ICACHE_SIZE 32768
 `endif
 
 // Core Response Queue Size
@@ -601,6 +607,7 @@
 // Cache Size
 `ifndef DCACHE_SIZE
 `define DCACHE_SIZE 16384
+// `define DCACHE_SIZE 32768
 `endif
 
 // Number of Banks

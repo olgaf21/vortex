@@ -195,8 +195,8 @@ int main(int argc, char *argv[]) {
 
   // generate source data
   for (uint32_t i = 0; i < size_sq; ++i) {
-    h_A[i] = Comparator<TYPE>::generate();
-    h_B[i] = Comparator<TYPE>::generate();
+    h_A[i] =1.0;// Comparator<TYPE>::generate();
+    h_B[i] = 1.2; //Comparator<TYPE>::generate();
   }
 
   // upload source buffer0

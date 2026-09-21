@@ -1,0 +1,1 @@
+-std=c++17 -Wall -Wextra -pedantic -Wfatal-errors -I/vortex/runtime/include -I/vortex/hw -I/vortex/sim/rtlsim -I/vortex/sim/common -I/vortex/runtime/common -DXLEN_32 -fPIC -DNUM_ALU_LANES=1 -DNUM_FPU_LANES=1 -DSCALAR_LOGIC=0 -DNUM_CORES=2 -DNUM_THREADS=8 -DNUM_WARPS=8 -DPERF_ENABLE -O2 -DNDEBUG

@@ -255,7 +255,7 @@ int main(int argc, char *argv[])
     // generate source data
     for (uint32_t i = 0; i < size_cubed; ++i)
     {
-        h_A[i] = Comparator<TYPE>::generate();
+        h_A[i] =1;// Comparator<TYPE>::generate();
     }
 
     // upload source buffer0

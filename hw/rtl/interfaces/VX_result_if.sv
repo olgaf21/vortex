@@ -18,8 +18,8 @@ interface VX_result_if import VX_gpu_pkg::*; #(
 ) ();
 
     logic  valid;
-    data_t data;
-    logic  ready;
+  /* verilator lint_off UNDRIVEN */  data_t data;
+/* verilator lint_off UNDRIVEN */    logic  ready;
 
     modport master (
         output valid,

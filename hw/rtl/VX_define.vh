@@ -451,6 +451,7 @@
         logic [`LOG2UP(`NUM_THREADS / __lanes__)-1:0] pid; \
         logic                           sop; \
         logic                           eop; \
+        logic is_scalar; \
     } __name__
 
 `define DECL_RESULT_T(__name__, __lanes__) \
@@ -465,6 +466,7 @@
         logic [`LOG2UP(`NUM_THREADS / __lanes__)-1:0] pid; \
         logic                       sop; \
         logic                       eop; \
+        logic is_scalar; \
     } __name__
 
 `endif // VX_DEFINE_VH

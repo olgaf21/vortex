@@ -26,6 +26,7 @@ module VX_nz_iterator #(
     input wire valid_in,                    // Stream input valid
     input wire [N-1:0][DATAW-1:0] data_in,  // Stream input data
     input wire next,                        // Advance iterator
+    input wire is_sc,
     output wire valid_out,                  // Current output valid
     output reg [DATAW-1:0] data_out,        // Current output data
     output reg [LPID_WIDTH-1:0] pid,        // Index of the current element
@@ -70,7 +71,7 @@ module VX_nz_iterator #(
         );
 
         reg is_first_p;
-        wire is_last_p = (start_p == end_p);
+        wire is_last_p = is_sc ? 1 : (start_p == end_p);
 
         wire enable = valid_in && (~valid_out || next);
 
@@ -101,6 +102,7 @@ module VX_nz_iterator #(
         `UNUSED_VAR (clk)
         `UNUSED_VAR (reset)
         `UNUSED_VAR (next)
+        `UNUSED_VAR(is_sc)
 
         assign valid_out = valid_in;
         assign data_out = data_in[0];

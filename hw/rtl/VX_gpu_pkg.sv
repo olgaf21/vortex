@@ -626,6 +626,7 @@ package VX_gpu_pkg;
         logic [`SIMD_WIDTH-1:0][`XLEN-1:0]  rs3_data;
         logic                               sop;
         logic                               eop;
+        logic [1:0] is_scalar;
     } operands_t;
 
     // warning: this layout should not be modified without updating VX_dispatch_unit!!!
@@ -644,6 +645,7 @@ package VX_gpu_pkg;
         logic [`SIMD_WIDTH-1:0][`XLEN-1:0]  rs3_data;
         logic                               sop;
         logic                               eop;
+        logic  is_scalar;
     } dispatch_t;
 
     typedef struct packed {
@@ -657,6 +659,7 @@ package VX_gpu_pkg;
         logic [`SIMD_WIDTH-1:0][`XLEN-1:0]  data;
         logic                               sop;
         logic                               eop;
+        logic is_scalar;
     } commit_t;
 
     typedef struct packed {
@@ -669,6 +672,7 @@ package VX_gpu_pkg;
         logic [`SIMD_WIDTH-1:0][`XLEN-1:0]  data;
         logic                               sop;
         logic                               eop;
+        logic  [1:0] is_scalar;
     } writeback_t;
 
     typedef struct packed {

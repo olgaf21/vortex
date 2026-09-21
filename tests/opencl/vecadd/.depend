@@ -1,0 +1,2 @@
+main.o: /vortex/tests/opencl/vecadd/main.cc \
+ /vortex/tests/opencl/vecadd/common.h

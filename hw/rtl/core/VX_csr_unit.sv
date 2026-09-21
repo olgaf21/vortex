@@ -162,15 +162,15 @@ module VX_csr_unit import VX_gpu_pkg::*; #(
     assign sched_csr_if.unlock_wid = execute_if.data.wid;
 
     VX_elastic_buffer #(
-        .DATAW (DATAW),
+        .DATAW (DATAW+1),
         .SIZE  (2)
     ) rsp_buf (
         .clk       (clk),
         .reset     (reset),
         .valid_in  (csr_req_valid),
         .ready_in  (csr_req_ready),
-        .data_in   ({execute_if.data.uuid, execute_if.data.wid, execute_if.data.tmask, execute_if.data.PC, execute_if.data.rd, execute_if.data.wb, csr_read_data,       execute_if.data.pid, execute_if.data.sop, execute_if.data.eop}),
-        .data_out  ({result_if.data.uuid,  result_if.data.wid,  result_if.data.tmask,  result_if.data.PC,  result_if.data.rd,  result_if.data.wb,  result_if.data.data, result_if.data.pid,  result_if.data.sop,  result_if.data.eop}),
+        .data_in   ({execute_if.data.uuid, execute_if.data.wid, execute_if.data.tmask, execute_if.data.PC, execute_if.data.rd, execute_if.data.wb, csr_read_data,       execute_if.data.pid, execute_if.data.sop, execute_if.data.eop,execute_if.data.is_scalar}),
+        .data_out  ({result_if.data.uuid,  result_if.data.wid,  result_if.data.tmask,  result_if.data.PC,  result_if.data.rd,  result_if.data.wb,  result_if.data.data, result_if.data.pid,  result_if.data.sop,  result_if.data.eop,result_if.data.is_scalar}),
         .valid_out (result_if.valid),
         .ready_out (result_if.ready)
     );

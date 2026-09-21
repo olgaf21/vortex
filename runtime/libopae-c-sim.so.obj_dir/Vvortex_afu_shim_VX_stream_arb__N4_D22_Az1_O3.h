@@ -1,0 +1,60 @@
+// Verilated -*- C++ -*-
+// DESCRIPTION: Verilator output: Design internal header
+// See Vvortex_afu_shim.h for the primary calling header
+
+#ifndef VERILATED_VVORTEX_AFU_SHIM_VX_STREAM_ARB__N4_D22_AZ1_O3_H_
+#define VERILATED_VVORTEX_AFU_SHIM_VX_STREAM_ARB__N4_D22_AZ1_O3_H_  // guard
+
+#include "verilated.h"
+
+
+class Vvortex_afu_shim__Syms;
+
+class alignas(VL_CACHE_LINE_BYTES) Vvortex_afu_shim_VX_stream_arb__N4_D22_Az1_O3 final {
+  public:
+
+    // DESIGN SPECIFIC STATE
+    CData/*0:0*/ clk;
+    CData/*0:0*/ reset;
+    CData/*3:0*/ valid_in;
+    CData/*3:0*/ ready_in;
+    CData/*0:0*/ valid_out;
+    CData/*0:0*/ ready_out;
+    CData/*1:0*/ __PVT__sel_out;
+    CData/*0:0*/ __PVT__g_input_select__DOT__g_arbiter__DOT__arb_valid;
+    CData/*1:0*/ __PVT__g_input_select__DOT__g_arbiter__DOT__arb_index;
+    CData/*3:0*/ __PVT__g_input_select__DOT__g_arbiter__DOT__arb_onehot;
+    CData/*0:0*/ __PVT__g_input_select__DOT__g_arbiter__DOT__g_out_buf__BRA__0__KET____DOT__out_buf__DOT__g_eb2__DOT__stream_buffer__DOT__g_buffer__DOT__valid_out_r;
+    CData/*0:0*/ __PVT__g_input_select__DOT__g_arbiter__DOT__g_out_buf__BRA__0__KET____DOT__out_buf__DOT__g_eb2__DOT__stream_buffer__DOT__g_buffer__DOT__valid_in_r;
+    CData/*0:0*/ __PVT__g_input_select__DOT__g_arbiter__DOT__g_out_buf__BRA__0__KET____DOT__out_buf__DOT__g_eb2__DOT__stream_buffer__DOT__g_buffer__DOT__flow_out;
+    CData/*1:0*/ __VdfgRegularize_h6e95ff9d_0_32;
+    CData/*1:0*/ __VdfgRegularize_h6e95ff9d_0_72;
+    CData/*1:0*/ __VdfgRegularize_h6e95ff9d_0_73;
+    CData/*1:0*/ __VdfgRegularize_h6e95ff9d_0_74;
+    CData/*1:0*/ __VdfgRegularize_h6e95ff9d_0_75;
+    CData/*3:0*/ __VdfgRegularize_h6e95ff9d_0_80;
+    CData/*3:0*/ __VdfgRegularize_h6e95ff9d_0_81;
+    QData/*33:0*/ __Vxrand___0;
+    VlWide<5>/*135:0*/ data_in;
+    QData/*33:0*/ data_out;
+    QData/*35:0*/ __Vcellinp__g_input_select__DOT__g_arbiter__DOT__g_out_buf__BRA__0__KET____DOT__out_buf__data_in;
+    QData/*35:0*/ __PVT__g_input_select__DOT__g_arbiter__DOT__g_out_buf__BRA__0__KET____DOT__out_buf__DOT__g_eb2__DOT__stream_buffer__DOT__g_buffer__DOT__data_out_r;
+    QData/*35:0*/ __PVT__g_input_select__DOT__g_arbiter__DOT__g_out_buf__BRA__0__KET____DOT__out_buf__DOT__g_eb2__DOT__stream_buffer__DOT__g_buffer__DOT__buffer_r;
+
+    // INTERNAL VARIABLES
+    Vvortex_afu_shim__Syms* vlSymsp;
+    const char* vlNamep;
+
+    // CONSTRUCTORS
+    Vvortex_afu_shim_VX_stream_arb__N4_D22_Az1_O3();
+    ~Vvortex_afu_shim_VX_stream_arb__N4_D22_Az1_O3();
+    void ctor(Vvortex_afu_shim__Syms* symsp, const char* namep);
+    void dtor();
+    VL_UNCOPYABLE(Vvortex_afu_shim_VX_stream_arb__N4_D22_Az1_O3);
+
+    // INTERNAL METHODS
+    void __Vconfigure(bool first);
+};
+
+
+#endif  // guard

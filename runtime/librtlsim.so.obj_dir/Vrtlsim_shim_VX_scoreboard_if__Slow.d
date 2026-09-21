@@ -1,0 +1,2 @@
+Vrtlsim_shim_VX_scoreboard_if__Slow.o: \
+ Vrtlsim_shim_VX_scoreboard_if__Slow.cpp Vrtlsim_shim__pch.h

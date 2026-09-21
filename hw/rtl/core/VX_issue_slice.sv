@@ -107,7 +107,7 @@ module VX_issue_slice import VX_gpu_pkg::*; #(
     `SCOPE_TAP_EX (0, 2, 4, 3, (
             UUID_WIDTH + NW_WIDTH + `NUM_THREADS + PC_BITS + EX_BITS + INST_OP_BITS + 1 + NUM_REGS_BITS * 4 +
             UUID_WIDTH + ISSUE_WIS_W + `SIMD_WIDTH + PC_BITS + EX_BITS + INST_OP_BITS + 1 + NUM_REGS_BITS + (3 * `XLEN) +
-            UUID_WIDTH + ISSUE_WIS_W + `SIMD_WIDTH + NUM_REGS_BITS + (`SIMD_WIDTH * `XLEN) + 1
+            UUID_WIDTH + ISSUE_WIS_W + `SIMD_WIDTH + NUM_REGS_BITS + (`SIMD_WIDTH * `XLEN) + 1     + 2
         ), {
             decode_if.valid,
             decode_if.ready,
@@ -145,7 +145,8 @@ module VX_issue_slice import VX_gpu_pkg::*; #(
             writeback_if.data.tmask,
             writeback_if.data.rd,
             writeback_if.data.data,
-            writeback_if.data.eop
+            writeback_if.data.eop,
+            writeback_if.data.is_scalar
         },
         reset_negedge, 1'b0, 4096
     );

@@ -35,7 +35,7 @@ module VX_gather_unit import VX_gpu_pkg::*; #(
     localparam LPID_WIDTH   = `UP(LPID_BITS);
     localparam GPID_BITS    = `CLOG2(`NUM_THREADS / NUM_LANES);
     localparam GPID_WIDTH   = `UP(GPID_BITS);
-    localparam DATAW        = UUID_WIDTH + NW_WIDTH + NUM_LANES + PC_BITS + 1 + NUM_REGS_BITS + NUM_LANES * `XLEN + GPID_WIDTH + 1 + 1;
+    localparam DATAW        = 1+UUID_WIDTH + NW_WIDTH + NUM_LANES + PC_BITS + 1 + NUM_REGS_BITS + NUM_LANES * `XLEN + GPID_WIDTH + 1 + 1;
     localparam DATA_WIS_OFF = DATAW - (UUID_WIDTH + NW_WIDTH);
 
     `DECL_RESULT_T (result_t, NUM_LANES);
@@ -103,42 +103,84 @@ module VX_gather_unit import VX_gpu_pkg::*; #(
         logic [`SIMD_WIDTH-1:0] commit_tmask_w;
         logic [`SIMD_WIDTH-1:0][`XLEN-1:0] commit_data_w;
 
-        if (LPID_BITS != 0) begin : g_lpid
-            logic [LPID_WIDTH-1:0] lpid;
+/* verilator lint_off UNUSEDSIGNAL */       
+         logic sc = result_tmp_if.data.is_scalar;
+     /* verilator lint_off UNDRIVEN */  //  logic mp ;
+/* verilator lint_off UNDRIVEN */      //   wire [NUM_LANES-1:0] mmask = {NUM_LANES{1'b1}};
+/* verilator lint_off UNUSEDSIGNAL */  
+      if (LPID_BITS != 0) begin : g_lpid
+           logic [LPID_WIDTH-1:0] lpid;
+           // logic [NUM_LANES-1:0] ptmask;
+           // logic [NUM_LANES-1:0][`XLEN-1:0] pdata;
             if (SIMD_COUNT != 1) begin : g_simd
                 assign {commit_sid_w, lpid} = result_tmp_if.data.pid;
             end else begin : g_no_simd
                 assign commit_sid_w = 0;
                 assign lpid = result_tmp_if.data.pid;
             end
+                
+          
             always @(*) begin
                 commit_tmask_w = '0;
-                commit_data_w  = 'x;
-                for (integer j = 0; j < NUM_LANES; ++j) begin
+                commit_data_w  = 'x; 
+               //  ptmask = '0;
+               //  pdata = 'x;     
+               // //mp = '0;
+               // if (result_tmp_if.data.pid == 0) begin
+               //      ptmask =  result_tmp_if.data.tmask;   
+               //      pdata = result_tmp_if.data.data;
+               //     // mp = result_tmp_if.valid;
+               //  end
+             if (sc==1) begin
+                  // if (result_tmp_if.data.pid == 0) begin
+                    for (integer j = 0; j < NUM_PACKETS; ++j) begin
+                        commit_tmask_w[j* NUM_LANES +: NUM_LANES] = result_tmp_if.data.tmask;
+                        commit_data_w[j * NUM_LANES +: NUM_LANES]  =result_tmp_if.data.data;
+                    end
+                    // end
+                    end  else begin       
+ 
+               for (integer j = 0; j < NUM_LANES; ++j) begin
+             /*  if (sc) begin
+                  for (integer i = 0; i < NUM_PACKETS; ++i) begin      
+                    commit_tmask_w[i * NUM_LANES + j] = ptmask[j];
+                    commit_data_w[i * NUM_LANES +j] = pdata[j];
+                  end*/
+              //   end else  begin
                     commit_tmask_w[lpid * NUM_LANES + j] = result_tmp_if.data.tmask[j];
                     commit_data_w[lpid * NUM_LANES + j] = result_tmp_if.data.data[j];
-                end
-            end
+                    end
+                // if (sc) begin
+                //     for (integer i=1; i< NUM_PACKETS; ++i) begin
+                //         commit_tmask_w[i*NUM_LANES +: NUM_LANES] =result_tmp_if.data.tmask;
+                //         commit_data_w [i*NUM_LANES +: NUM_LANES] = result_tmp_if.data.data;
+                //     end
+                // end
+                    
+                   end
+         end
         end else begin : g_no_lpid
             assign commit_sid_w   = result_tmp_if.data.pid;
             assign commit_tmask_w = result_tmp_if.data.tmask;
             assign commit_data_w  = result_tmp_if.data.data;
         end
 
-        assign commit_if[i].valid = result_tmp_if.valid;
+
+        assign commit_if[i].valid = /*sc ? mp :*/ result_tmp_if.valid;
         assign commit_if[i].data = {
             result_tmp_if.data.uuid,
             result_tmp_if.data.wid,
             commit_sid_w,
-            commit_tmask_w,
+           /* sc ? 8'b11111111 : */ commit_tmask_w,
             result_tmp_if.data.PC,
             result_tmp_if.data.wb,
             result_tmp_if.data.rd,
             commit_data_w,
             result_tmp_if.data.sop,
-            result_tmp_if.data.eop
+          sc ? 1'b1 : result_tmp_if.data.eop,
+            result_tmp_if.data.is_scalar
         };
-        assign result_tmp_if.ready = commit_if[i].ready;
+        assign result_tmp_if.ready = /*sc ? 1: */commit_if[i].ready;
     end
 
 endmodule

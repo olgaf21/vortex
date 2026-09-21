@@ -316,7 +316,27 @@ module VX_schedule import VX_gpu_pkg::*; #(
         .valid_out (schedule_valid),
         `UNUSED_PIN (onehot_out)
     );
+// //mine
+// reg [NW_WIDTH-1:0] rr_ptr;
 
+//     always @(posedge clk) begin
+//         if (reset) rr_ptr <= '0;
+//         else if (schedule_fire) rr_ptr <= rr_ptr + 1'b1; // overflow = wrap around αυτόματα
+//     end
+
+    
+// wire [`NUM_WARPS-1:0] ready_warps_rotated = (ready_warps >> rr_ptr) | (ready_warps << ((`NUM_WARPS - rr_ptr) % `NUM_WARPS));  
+//   wire [NW_WIDTH-1:0] schedule_wid_rot;
+//     VX_priority_encoder #(
+//         .N (`NUM_WARPS)
+//     ) wid_select (
+//         .data_in   (ready_warps_rotated),
+//         .index_out (schedule_wid_rot),
+//         .valid_out (schedule_valid),
+//         `UNUSED_PIN (onehot_out)
+//     );
+
+//      assign schedule_wid = NW_WIDTH'((NW_WIDTH'(schedule_wid_rot) + NW_WIDTH'(rr_ptr)) % NW_WIDTH'(`NUM_WARPS));    //endofmine
     wire [`NUM_WARPS-1:0][(`NUM_THREADS + PC_BITS)-1:0] schedule_data;
     for (genvar i = 0; i < `NUM_WARPS; ++i) begin : g_schedule_data
         assign schedule_data[i] = {thread_masks[i], warp_pcs[i]};

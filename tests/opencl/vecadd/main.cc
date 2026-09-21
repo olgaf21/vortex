@@ -206,7 +206,6 @@ int main (int argc, char **argv) {
     h_a[i] = Comparator<TYPE>::generate();
     h_b[i] = Comparator<TYPE>::generate();
   }
-
   // Creating command queue
   commandQueue = CL_CHECK2(clCreateCommandQueue(context, device_id, 0, &_err));
 

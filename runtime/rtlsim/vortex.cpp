@@ -261,3 +261,10 @@ private:
 };
 
 #include <callbacks.inc>
+// --- BACKWARDS COMPATIBILITY SHIMS FOR POCL ---
+extern "C" int vx_device_open(vx_device_h* hdevice) {
+    return vx_dev_open(hdevice);
+}
+extern "C" int vx_device_close(vx_device_h hdevice) {
+    return vx_dev_close(hdevice);
+}

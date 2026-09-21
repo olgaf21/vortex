@@ -1,0 +1,1 @@
+-std=c++17 -Wall -Wextra -pedantic -Wfatal-errors -I/vortex/runtime/include -I/vortex/hw -I/vortex/runtime/opae/.. -I/vortex/sim/common -I/vortex/runtime/common -DXLEN_32 -fPIC  -DOPAESIM -I/vortex/sim/opaesim -O2 -DNDEBUG

@@ -51,7 +51,7 @@ module VX_opc_unit import VX_gpu_pkg::*; #(
 
     localparam REG_REM_BITS     = NUM_REGS_BITS - BANK_SEL_BITS;
 
-    localparam META_DATAW       = UUID_WIDTH + ISSUE_WIS_W + SIMD_IDX_W + `SIMD_WIDTH + PC_BITS + 1 + EX_BITS + INST_OP_BITS + INST_ARGS_BITS + NUM_REGS_BITS + 1 + 1;
+    localparam META_DATAW       = UUID_WIDTH + ISSUE_WIS_W + SIMD_IDX_W + `SIMD_WIDTH + PC_BITS + 1 + EX_BITS + INST_OP_BITS + INST_ARGS_BITS + NUM_REGS_BITS + 1 + 1 + NUM_SRC_OPDS;
     localparam OUT_DATAW        = $bits(operands_t);
 
     `UNUSED_VAR (writeback_if.data.sop)
@@ -85,6 +85,9 @@ module VX_opc_unit import VX_gpu_pkg::*; #(
 
     wire [NUM_SRC_OPDS-1:0][NUM_REGS_BITS-1:0] src_regs;
     assign src_regs = {scoreboard_if.data.rs3, scoreboard_if.data.rs2, scoreboard_if.data.rs1};
+
+    reg  [NUM_SRC_OPDS-1:0][1:0] gpr_rd_sc_st2, gpr_rd_sc_n_st2;
+    wire [NUM_BANKS-1:0][1:0] scrd;
 
     for (genvar i = 0; i < NUM_SRC_OPDS; ++i) begin : g_gpr_rd_reg
         assign req_addr_in[i] = src_regs[i][NUM_REGS_BITS-1 -: REG_REM_BITS];
@@ -149,6 +152,7 @@ module VX_opc_unit import VX_gpu_pkg::*; #(
         .valid_in(scoreboard_if.valid),
         .data_in (scoreboard_if.data.tmask),
         .next    (opd_last_fetch),
+        .is_sc (writeback_if.data.is_scalar[0]),
         `UNUSED_PIN (valid_out),
         .data_out(simd_out),
         .pid     (simd_pid),
@@ -156,6 +160,9 @@ module VX_opc_unit import VX_gpu_pkg::*; #(
         .eop     (simd_eop)
     );
 
+    // used_rs is now carried alongside the rest of the instruction
+    // metadata through both pipeline stages, so it is still available
+    // when we finally compute the checked/scalar reduction at stage 2.
     assign pipe_mdata = {
         scoreboard_if.data.uuid,
         scoreboard_if.data.wis,
@@ -168,7 +175,8 @@ module VX_opc_unit import VX_gpu_pkg::*; #(
         scoreboard_if.data.op_args,
         scoreboard_if.data.rd,
         simd_sop,
-        simd_eop
+        simd_eop,
+        scoreboard_if.data.used_rs
     };
 
     assign scoreboard_if.ready = opd_last_fetch && simd_eop;
@@ -216,11 +224,17 @@ module VX_opc_unit import VX_gpu_pkg::*; #(
         .ready_out(pipe_ready_st2)
     );
 
+    // Extract used_rs back out of pipe_mdata_st2 (it is the LSB field,
+    // laid out last in the concatenation above).
+    wire [NUM_SRC_OPDS-1:0] used_rs_st2 = pipe_mdata_st2[NUM_SRC_OPDS-1:0];
+
     always @(*) begin
         opd_buffer_n_st2 = opd_buffer_st2;
+        gpr_rd_sc_n_st2  = gpr_rd_sc_st2;
         for (integer b = 0; b < NUM_BANKS; ++b) begin
             if (gpr_rd_valid_st2[b]) begin
                 opd_buffer_n_st2[gpr_rd_opd_st2[b]] = gpr_rd_data_st2[b];
+                gpr_rd_sc_n_st2[gpr_rd_opd_st2[b]]  = scrd[b];
             end
         end
     end
@@ -228,8 +242,10 @@ module VX_opc_unit import VX_gpu_pkg::*; #(
     always @(posedge clk) begin
         if (reset || pipe_fire_st2) begin
             opd_buffer_st2 <= '0; // clear on reset or when data is sent out
-        end else begin
+            gpr_rd_sc_st2  <= '0; // real reset -- no longer used as a
+          end else begin
             opd_buffer_st2 <= opd_buffer_n_st2;
+            gpr_rd_sc_st2  <= gpr_rd_sc_n_st2;
         end
     end
 
@@ -256,7 +272,7 @@ module VX_opc_unit import VX_gpu_pkg::*; #(
         assign gpr_wr_byteen[i*XLENB+:XLENB] = {XLENB{writeback_if.data.tmask[i]}};
     end
 
-    // GPR banks
+   
     for (genvar b = 0; b < NUM_BANKS; ++b) begin : g_gpr_rams
         wire gpr_wr_enabled;
         if (BANK_SEL_BITS != 0) begin : g_gpr_wr_enabled_bn
@@ -296,9 +312,37 @@ module VX_opc_unit import VX_gpu_pkg::*; #(
             .raddr (gpr_rd_addr),
             .rdata (gpr_rd_data_st2[b])
         );
+
+        VX_dp_ram #(
+            .DATAW (2),
+            .SIZE  (BANK_SIZE),
+            .WRENW (1),
+         `ifdef GPR_RESET
+            .RESET_RAM (1),
+         `endif
+            .OUT_REG (1),
+            .RDW_MODE ("R")
+        ) gpr_sc_ram (
+            .clk   (clk),
+            .reset (reset),
+            .read  (pipe_fire_st1),
+            .wren  (1'b1),
+            .write (gpr_wr_enabled),
+            .waddr (gpr_wr_addr),
+            .wdata (writeback_if.data.is_scalar),
+            .raddr (gpr_rd_addr),
+            .rdata (scrd[b])
+        );
     end
 
-    // output buffer
+    wire [NUM_SRC_OPDS-1:0] checked_bits, scalar_bits;
+    for (genvar i = 0; i < NUM_SRC_OPDS; ++i) begin : g_sc_bits
+        assign checked_bits[i] = gpr_rd_sc_st2[i][1] | ~used_rs_st2[i];
+        assign scalar_bits[i]  = gpr_rd_sc_st2[i][0] | ~used_rs_st2[i];
+    end
+    wire checked_all = &checked_bits;
+    wire fsc = checked_all && (&scalar_bits);
+
     VX_elastic_buffer #(
         .DATAW   (OUT_DATAW),
         .SIZE    (`TO_OUT_BUF_SIZE(OUT_BUF)),
@@ -308,9 +352,10 @@ module VX_opc_unit import VX_gpu_pkg::*; #(
         .reset    (reset),
         .valid_in (pipe_valid_st2),
         .ready_in (pipe_ready_st2),
-        .data_in  ({pipe_mdata_st2[META_DATAW-1:2], // remove sop/eop
+        .data_in  ({pipe_mdata_st2[META_DATAW-1:2+NUM_SRC_OPDS], // remove sop/eop/used_rs
                     opd_buffer_n_st2, // operand data
-                    pipe_mdata_st2[1:0]}), // sop/eop
+                    pipe_mdata_st2[1+NUM_SRC_OPDS:NUM_SRC_OPDS],
+                    checked_all, fsc}), // sop/eop, is_scalar[1:0]
         .data_out ({
             operands_if.data.uuid,
             operands_if.data.wis,
@@ -326,7 +371,8 @@ module VX_opc_unit import VX_gpu_pkg::*; #(
             operands_if.data.rs2_data,
             operands_if.data.rs1_data,
             operands_if.data.sop,
-            operands_if.data.eop
+            operands_if.data.eop,
+            operands_if.data.is_scalar
         }),
         .valid_out(operands_if.valid),
         .ready_out(operands_if.ready)

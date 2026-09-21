@@ -1,0 +1,1 @@
+-std=c++17 -Wall -Wextra -Wfatal-errors -fPIC -Wno-maybe-uninitialized -I/vortex/runtime/include -I../common -I/vortex/hw -I/vortex/sim/simx -I/vortex/sim/common -I/vortex/runtime/common -DXLEN_32  -O2 -DNDEBUG

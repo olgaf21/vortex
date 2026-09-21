@@ -135,7 +135,6 @@ int main(int argc, char *argv[]) {
   std::cout << "buffer size: " << buf_size << " bytes" << std::endl;
 
   kernel_arg.num_points = num_points;
-
   // allocate device memory
   std::cout << "allocate device memory" << std::endl;
   RT_CHECK(vx_mem_alloc(device, buf_size, VX_MEM_READ, &src0_buffer));
@@ -156,8 +155,8 @@ int main(int argc, char *argv[]) {
   std::vector<TYPE> h_dst(num_points);
 
   for (uint32_t i = 0; i < num_points; ++i) {
-    h_src0[i] = Comparator<TYPE>::generate();
-    h_src1[i] = Comparator<TYPE>::generate();
+    h_src0[i] = 1;//Comparator<TYPE>::generate();
+    h_src1[i] = 2;
   }
 
   // upload source buffer0
