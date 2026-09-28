@@ -57,9 +57,10 @@ riscv64()
 
 llvm()
 {
-    case $OSVERSION in
-    "centos/7") parts=$(eval echo {a..b}) ;;
-    *)          parts=$(eval echo {a..b}) ;;
+   case $OSVERSION in
+    "centos/7")     parts=$(eval echo {a..b}) ;;
+    "ubuntu/focal") parts=$(eval echo {a..c}) ;;
+    *)              parts=$(eval echo {a..b}) ;;
     esac
     echo $parts
     rm -f llvm-vortex.tar.bz2.parta*
