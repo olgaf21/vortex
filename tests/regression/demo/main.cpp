@@ -164,8 +164,8 @@ int main(int argc, char *argv[]) {
 
   // generate source data
   for (uint32_t i = 0; i < num_points; ++i) {
-    h_src0[i] = Comparator<TYPE>::generate();
-    h_src1[i] = Comparator<TYPE>::generate();
+    h_src0[i] = (rand() % 2) ? 0: Comparator<TYPE>::generate();
+    h_src1[i] = (rand() % 2) ? 0:  Comparator<TYPE>::generate();
   }
 
   // upload source buffer0

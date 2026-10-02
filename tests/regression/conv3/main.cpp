@@ -197,14 +197,14 @@ int main(int argc, char *argv[]) {
   for (int32_t y = -1; y < size+1; ++y) {
     for (int32_t x = -1; x < size+1; ++x) {
       if (x >= 0 && x < size && y >= 0 && y < size) {
-        h_I[(y+1) * (size+2) + (x+1)] = static_cast<TYPE>(rand()) / RAND_MAX;
+        h_I[(y+1) * (size+2) + (x+1)] =  (rand() % 2) ? 0: static_cast<TYPE>(rand()) / RAND_MAX;
       } else {
         h_I[(y+1) * (size+2) + (x+1)] = 0;
       }
     }
   }
   for (uint32_t i = 0; i < w_points; ++i) {
-    h_W[i] = static_cast<TYPE>(rand()) / RAND_MAX;
+    h_W[i] =  (rand() % 2) ? 0 : static_cast<TYPE>(rand()) / RAND_MAX;
   }
 
   // upload input buffer

@@ -156,15 +156,15 @@ module VX_wctl_unit import VX_gpu_pkg::*; #(
     wire [DV_STACK_SIZEW-1:0] dvstack_ptr;
 
     VX_elastic_buffer #(
-        .DATAW (DATAW),
+        .DATAW (DATAW+1),
         .SIZE  (2)
     ) rsp_buf (
         .clk       (clk),
         .reset     (reset),
         .valid_in  (execute_if.valid),
         .ready_in  (execute_if.ready),
-        .data_in   ({execute_if.data.uuid, execute_if.data.wid, execute_if.data.tmask, execute_if.data.PC, execute_if.data.rd, execute_if.data.wb, execute_if.data.pid, execute_if.data.sop, execute_if.data.eop, warp_ctl_if.dvstack_ptr}),
-        .data_out  ({result_if.data.uuid,  result_if.data.wid,  result_if.data.tmask,  result_if.data.PC,  result_if.data.rd,  result_if.data.wb,  result_if.data.pid,  result_if.data.sop,  result_if.data.eop,  dvstack_ptr}),
+        .data_in   ({execute_if.data.uuid, execute_if.data.wid, execute_if.data.tmask, execute_if.data.PC, execute_if.data.rd, execute_if.data.wb, execute_if.data.pid, execute_if.data.sop, execute_if.data.eop,execute_if.data.is_scalar, warp_ctl_if.dvstack_ptr}),
+        .data_out  ({result_if.data.uuid,  result_if.data.wid,  result_if.data.tmask,  result_if.data.PC,  result_if.data.rd,  result_if.data.wb,  result_if.data.pid,  result_if.data.sop,  result_if.data.eop,result_if.data.is_scalar,  dvstack_ptr}),
         .valid_out (result_if.valid),
         .ready_out (result_if.ready)
     );

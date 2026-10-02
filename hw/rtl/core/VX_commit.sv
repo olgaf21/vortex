@@ -172,6 +172,15 @@ module VX_commit import VX_gpu_pkg::*; #(
         assign writeback_if[i].data.sop  = commit_arb_if[i].data.sop;
         assign writeback_if[i].data.eop  = commit_arb_if[i].data.eop;
         assign commit_arb_if[i].ready    = 1;
+
+       /* wire [`SIMD_WIDTH-1:0] lane_eq;
+        for (genvar j = 0; j < `SIMD_WIDTH; ++j) begin : g_sds
+            assign lane_eq[j] =/* ~commit_arb_if[i].data.tmask[j]
+                              ||*/ /* (commit_arb_if[i].data.data[j] == commit_arb_if[i].data.data[0]) && (commit_arb_if[i].data.tmask[j]==1);
+       /* end
+        wire sm = (& lane_eq);*/
+        assign writeback_if[i].data.is_scalar[0] = commit_arb_if[i].data.is_scalar;
+        assign writeback_if[i].data.is_scalar[1] = 1'b1;
     end
 
 `ifdef DBG_TRACE_PIPELINE

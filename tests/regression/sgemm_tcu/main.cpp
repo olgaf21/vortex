@@ -606,7 +606,7 @@ int main(int argc, char *argv[]) {
   std::vector<itype_t> h_A(sizeA);
   std::vector<itype_t> h_B(sizeB);
   for (uint32_t i = 0; i < sizeA; ++i) {
-    h_A[i] = Comparator<vt::ITYPE>::generate();
+    h_A[i] =Comparator<vt::ITYPE>::generate();
   }
   for (uint32_t i = 0; i < sizeB; ++i) {
     h_B[i] = Comparator<vt::ITYPE>::generate();

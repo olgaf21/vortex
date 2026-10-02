@@ -17,8 +17,8 @@ interface VX_execute_if import VX_gpu_pkg::*; #(
     parameter type data_t = logic
 );
     logic  valid;
-    data_t data;
-    logic  ready;
+  /* verilator lint_off UNUSEDSIGNAL */  data_t data;
+/* verilator lint_off UNUSEDSIGNAL */    logic  ready;
 
     modport master (
         output valid,

@@ -32,12 +32,41 @@ module VX_dispatch import VX_gpu_pkg::*; #(
     `UNUSED_SPARAM (INSTANCE_ID)
     `UNUSED_PARAM (ISSUE_ID)
 
-    localparam OUT_DATAW = $bits(dispatch_t);
+   localparam OUT_DATAW = $bits(dispatch_t);
 
     wire [NUM_EX_UNITS-1:0] operands_ready_in;
     assign operands_if.ready = operands_ready_in[operands_if.data.ex_type];
-
-    for (genvar i = 0; i < NUM_EX_UNITS; ++i) begin : g_buffers
+    logic scalar;
+if (`SCALAR_LOGIC == 1) begin: logscalar
+   logic [`SIMD_WIDTH-1:0] s1, s2,s3;
+  //  assign scalar = (& operands_if.data.is_scalar);
+   always @(*) begin
+       s1='1;
+       s2='1;
+    s3 = '1;
+       // scalar=0;
+         if (operands_if.data.is_scalar[1] == 1'b1) begin
+            scalar = operands_if.data.is_scalar[0] &&
+((operands_if.data.ex_type == EX_ALU) || (operands_if.data.ex_type == EX_FPU)) && (operands_if.data.tmask == {`SIMD_WIDTH{1'b1}});
+           // $display("scalar=%b",scalar);
+        end else begin
+       //     scalar = 0;
+            for (integer j=0;j<`SIMD_WIDTH;++j) begin
+                s1[j] = (operands_if.data.rs1_data[j] == operands_if.data.rs1_data[0]);// || (operands_if.data.rs1_data[j] == 0));
+                s2[j] = (operands_if.data.rs2_data[j] == operands_if.data.rs2_data[0]);// || (operands_if.data.rs2_data[j] == 0));
+                s3[j] = (operands_if.data.rs3_data[j] == operands_if.data.rs3_data[0]);// || (operands_if.data.rs3_data[j] == 0));
+            end
+            scalar = (&s1) && (&s2 )&& (&s3) && ((operands_if.data.ex_type == EX_ALU) || (operands_if.data.ex_type == EX_FPU))
+                 && (operands_if.data.tmask == {`SIMD_WIDTH{1'b1}});
+            // $display("s1,s2=%b",scalar);
+           // $display("s1,s2");
+        end
+    end
+    end
+else begin: nscalar
+     assign  scalar=1'b0;
+    end
+ for (genvar i = 0; i < NUM_EX_UNITS; ++i) begin : g_buffers
         VX_elastic_buffer #(
             .DATAW   (OUT_DATAW),
             .SIZE    (2),
@@ -61,7 +90,8 @@ module VX_dispatch import VX_gpu_pkg::*; #(
                 operands_if.data.rs2_data,
                 operands_if.data.rs3_data,
                 operands_if.data.sop,
-                operands_if.data.eop
+                operands_if.data.eop,
+                scalar
             }),
             .data_out   (dispatch_if[i].data),
             .valid_out  (dispatch_if[i].valid),

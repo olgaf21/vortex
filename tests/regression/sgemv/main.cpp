@@ -113,10 +113,10 @@ int main(int argc, char *argv[]) {
   std::vector<float> h_x(N);
   std::vector<float> h_y(M, 0.0f);
   for (uint32_t i = 0; i < M * N; ++i) {
-    h_A[i] = static_cast<float>(rand()) / RAND_MAX;  // Random matrix (0-1)
+    h_A[i] =(rand() % 2)? 0: static_cast<float>(rand()) / RAND_MAX;  // Random matrix (0-1)
   }
   for (uint32_t i = 0; i < N; ++i) {
-    h_x[i] = static_cast<float>(rand()) / RAND_MAX;  // Random vector (0-1)
+    h_x[i] = (rand() % 2) ? 0 : static_cast<float>(rand()) / RAND_MAX;  // Random vector (0-1)
   }
 
   // Upload input buffers

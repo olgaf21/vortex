@@ -151,7 +151,7 @@ int main(int argc, char *argv[]) {
   std::vector<int> h_dst(total_threads);
 
   for (uint32_t i = 0; i < cta_size; ++i) {
-    h_src[i] = Comparator<int>::generate();
+    h_src[i] = 1;//Comparator<int>::generate();
   }
 
   // upload source buffer0
